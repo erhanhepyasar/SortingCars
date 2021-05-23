@@ -3,13 +3,12 @@ package com.erhan.service;
 import com.erhan.domain.Car;
 import com.erhan.domain.CarColor;
 import com.erhan.domain.DestinationCity;
-import com.erhan.util.QuickSort;
+import com.erhan.util.Sorter;
+
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.concurrent.ForkJoinPool;
 import java.util.logging.Logger;
 
 
@@ -80,28 +79,16 @@ public class CarServiceImpl implements CarService{
         pw.close();
     }
 
-
-
     @Override
     public Car[] sortCars(final Car[] cars) {
         final long start = System.currentTimeMillis();
-        quickSort(cars);
+        try {
+            Sorter.quicksort(cars);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         logger.info("Cars sorted in " + (System.currentTimeMillis() - start) + " ms");
         return cars;
-    }
-
-    private void quickSort(final Car[] cars) {
-        QuickSort<Car> quickSort = new QuickSort<>(cars);
-        ForkJoinPool pool = new ForkJoinPool();
-        pool.invoke(quickSort);
-
-    }
-
-    /*
-        An alternate way of sorting with threads
-     */
-    private void parallelSort(final Car[] cars) {
-        Arrays.parallelSort(cars);
     }
 
 }
