@@ -3,7 +3,7 @@ package com.erhan.service;
 import com.erhan.domain.Car;
 import com.erhan.domain.CarColor;
 import com.erhan.domain.DestinationCity;
-import com.erhan.util.CustomSorter;
+import com.erhan.util.Sorter;
 
 
 import java.io.FileWriter;
@@ -83,7 +83,7 @@ public class CarServiceImpl implements CarService{
     @Override
     public Car[] sortCars(final Car[] cars) {
         try {
-            CustomSorter.quicksort(cars);
+            Sorter.quicksort(cars);
         } catch (InterruptedException e) {
             LOGGER.log(Level.WARNING, "Sorting cars has been interrupted :", e);
             Thread.currentThread().interrupt();

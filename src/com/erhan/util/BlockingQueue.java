@@ -6,12 +6,12 @@ import java.util.LinkedList;
  * BlockingQueue class will be used to store tasks.
  */
 
-public class CustomBlockingQueue<Type> {
+public class BlockingQueue<Type> {
     private final LinkedList<Type> queue = new LinkedList<>();
     private final int EMPTY = 0;
     private final int MAX_TASK_IN_QUEUE;
 
-    public CustomBlockingQueue(int size){
+    public BlockingQueue(int size){
         this.MAX_TASK_IN_QUEUE = size;
     }
 

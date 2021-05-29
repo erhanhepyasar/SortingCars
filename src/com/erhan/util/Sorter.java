@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CustomSorter {
+public class Sorter {
     private static final Logger LOGGER = Logger.getLogger("Logger");
     /**
      * Number of threads to use for sorting.
@@ -21,7 +21,9 @@ public class CustomSorter {
     /**
      * Thread pool used for executing sorting Runnable.
      */
-    private static final CustomThreadPool pool = new CustomThreadPool(QUEUE_SIZE, MAX_THREADS);
+    private static final ThreadPool pool = new ThreadPool(QUEUE_SIZE, MAX_THREADS);
+
+    private Sorter() {}
 
     /**
      * Main method used for sorting from clients. Input is sorted in place using multiple threads.
@@ -47,7 +49,8 @@ public class CustomSorter {
         while (threadPoolIsActive) {
             if (pool.getQueue().getQueueSize() == 0) {
                 pool.getTask().destroy();
-                LOGGER.log(Level.INFO, "======================== STEP-4 ======= Cars has been sorted in \"{0} milliseconds\"", + (System.currentTimeMillis() - startingTime));
+                LOGGER.log(Level.INFO, "======================== STEP-4 ======= Cars has been sorted " +
+                        "in \"{0} milliseconds\"", + (System.currentTimeMillis() - startingTime));
                 threadPoolIsActive = false;
             }
         }
@@ -59,7 +62,7 @@ public class CustomSorter {
      *
      * @param <T> The type of the objects being sorted, must extend Comparable.
      */
-    private static class QuicksortRunnable<T extends Comparable<T>> implements Runnable {
+    public static class QuicksortRunnable<T extends Comparable<T>> implements Runnable {
         /**
          * The array being sorted.
          */
@@ -101,7 +104,9 @@ public class CustomSorter {
             try {
                 quicksort(left, right);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "Interrupted!", e);
+                Thread.currentThread().interrupt();
+
             }
             synchronized (activeThreadCount) {
                 // AtomicInteger.getAndDecrement() returns the old value. If the old value is 1, then we know that the actual value is 0.
