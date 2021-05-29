@@ -1,12 +1,16 @@
 package com.erhan.util;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * TaskExecutor class is capable of executing the task.
  */
 public class CustomTaskExecutor implements Runnable {
-    BlockingQueue<Runnable> queue;
+    private static final Logger LOGGER = Logger.getLogger("Logger");
+    final CustomBlockingQueue<Runnable> queue;
 
-    public CustomTaskExecutor(BlockingQueue<Runnable> queue) {
+    public CustomTaskExecutor(CustomBlockingQueue<Runnable> queue) {
         this.queue = queue;
     }
 
@@ -14,15 +18,22 @@ public class CustomTaskExecutor implements Runnable {
     public void run() {
         try {
             while (true) {
-//                String name = Thread.currentThread().getName();
+//              String threadName = Thread.currentThread().getName();
                 Runnable task = queue.dequeue();
-//                System.out.println("Task Started by Thread :" + name);
+//                LOGGER.log(Level.INFO, "Task has been started by Thread : {0}", threadName);
                 task.run();
-//                System.err.println("Task Finished by Thread :" + name);
+//                LOGGER.log(Level.INFO, "Task has been finished by Thread : {0}", threadName);
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "Sorting cars has been interrupted :", e);
+            Thread.currentThread().interrupt();
         }
 
+    }
+
+    public void destroy() {
+        synchronized (this) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

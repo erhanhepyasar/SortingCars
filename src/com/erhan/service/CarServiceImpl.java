@@ -3,12 +3,13 @@ package com.erhan.service;
 import com.erhan.domain.Car;
 import com.erhan.domain.CarColor;
 import com.erhan.domain.DestinationCity;
-import com.erhan.util.Sorter;
+import com.erhan.util.CustomSorter;
 
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -16,8 +17,7 @@ public class CarServiceImpl implements CarService{
 
     private static final String CAR_FILE = "cars.txt";
     private static final String SORTED_CAR_FILE = "cars_sorted.txt";
-
-    Logger logger = Logger.getLogger("Logger");
+    private static final Logger LOGGER = Logger.getLogger("Logger");
 
     @Override
     public Car[] produceCars(final int quantity) {
@@ -30,6 +30,7 @@ public class CarServiceImpl implements CarService{
                             genDestinationCity()
                     );
         }
+        LOGGER.log(Level.INFO, "======================== STEP-1 ======= Cars has been produced.");
         return cars;
     }
 
@@ -38,8 +39,8 @@ public class CarServiceImpl implements CarService{
     }
 
     private long genSerialNo() {
-        long leftLimit =  100000000000L;
-        long rightLimit = 999999999999L;
+        final long leftLimit =  100000000000L;
+        final long rightLimit = 999999999999L;
         return leftLimit + (long) (Math.random() * (rightLimit - leftLimit));
     }
 
@@ -53,41 +54,40 @@ public class CarServiceImpl implements CarService{
 
     @Override
     public void exportCarsToFile(final Car[] cars) throws IOException {
-        PrintWriter pw = new PrintWriter(new FileWriter(CAR_FILE));
+        final PrintWriter pw = new PrintWriter(new FileWriter(CAR_FILE));
         for (Car car : cars) {
             pw.println(car.getProductionOrder() + ":" +
                     car.getSerialNo() + ":" +
                     car.getCarColor() + ":" +
                     car.getDestinationCity()
             );
-
         }
         pw.close();
+        LOGGER.log(Level.INFO, "======================== STEP-2 ======= Generated cars has been exported to the file: \"{0}\"", CAR_FILE);
     }
 
     @Override
     public void exportSortedCarsToFile(Car[] sortedCars) throws IOException {
-        PrintWriter pw = new PrintWriter(new FileWriter(SORTED_CAR_FILE));
+        final PrintWriter pw = new PrintWriter(new FileWriter(SORTED_CAR_FILE));
         for (Car sortedCar : sortedCars) {
             pw.println(sortedCar.getDestinationCity() + ":" +
                     sortedCar.getCarColor() + ":" +
                     sortedCar.getSerialNo() + ":" +
                     sortedCar.getProductionOrder()
             );
-
         }
         pw.close();
+        LOGGER.log(Level.INFO, "======================== STEP-5 ======= Sorted cars has been exported to the file: \"{0}\"", SORTED_CAR_FILE);
     }
 
     @Override
     public Car[] sortCars(final Car[] cars) {
-        final long start = System.currentTimeMillis();
         try {
-            Sorter.quicksort(cars);
+            CustomSorter.quicksort(cars);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "Sorting cars has been interrupted :", e);
+            Thread.currentThread().interrupt();
         }
-        logger.info("Cars sorted in " + (System.currentTimeMillis() - start) + " ms");
         return cars;
     }
 

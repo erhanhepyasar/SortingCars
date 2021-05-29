@@ -17,6 +17,7 @@ public class Main {
         carService.exportCarsToFile(cars);
         final Car[] sortedCars = carService.sortCars(cars);
         carService.exportSortedCarsToFile(sortedCars);
+        System.exit(0);
     }
 }
 
